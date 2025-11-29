@@ -8,41 +8,47 @@ public class DragAndDropHandler : MonoBehaviour
     private RayGroundController _rayGroundController;
     private RayItemController _rayItemController;
 
-    private IMoveable _currentItem;
+    private InputDrag _inputDrag;
+
+    private IDraggable _currentItem;
 
     private bool _isleftMouseDown;
     private bool _isleftMouseHold;
     private bool _isleftMouseUp;
 
     private Ray _ray;
+    private Vector3 _groundPoint;
+
+    private float _yPosition = 1f;
 
     private void Awake()
     {
+        _inputDrag = new LeftMouseInputDrag();
+
         _rayGroundController = new RayGroundController(_groundMask);
         _rayItemController = new RayItemController(_itemMask);
     }
 
     private void Update()
     {
-        _isleftMouseDown = Input.GetMouseButtonDown(0);
-        _isleftMouseHold = Input.GetMouseButton(0);
-        _isleftMouseUp = Input.GetMouseButtonUp(0);
+        _ray = Camera.main.ScreenPointToRay(_inputDrag.InputPosition());
 
-        _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        _groundPoint = _rayGroundController.GetPoint();
 
-        Vector3 groundPoint = _rayGroundController.GetPoint();
-
-        if (_isleftMouseDown)
+        if (_inputDrag.IsInputDown())
             SetCurrentItem();
 
+        if (_inputDrag.IsInputUp())
+            Drop();
+    }
+
+    private void FixedUpdate()
+    {
         if (_rayItemController.IsHit(_ray))
         {
-            if (_isleftMouseHold && _currentItem != null)
-                _currentItem.Move(groundPoint);
+            if (_inputDrag.IsInputHold() && _currentItem != null)
+                _currentItem.Drag(_groundPoint, _yPosition);
         }
-
-        if (_isleftMouseUp)
-            Drop();
     }
 
     private void SetCurrentItem()

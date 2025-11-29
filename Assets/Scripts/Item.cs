@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Item : MonoBehaviour, IMoveable
+public class Item : MonoBehaviour, IDraggable, IExpodable
 {
     Rigidbody _rigidbody;
 
@@ -8,8 +8,13 @@ public class Item : MonoBehaviour, IMoveable
     {
         _rigidbody = GetComponent<Rigidbody>();
     }
-    public void Move(Vector3 mousePosition)
+    public void Drag(Vector3 mousePosition, float yPosition)
     {
-        transform.position = new Vector3(mousePosition.x, transform.position.y, mousePosition.z);
+        _rigidbody.position = new Vector3(mousePosition.x, yPosition, mousePosition.z);
+    }
+
+    public void Explode(float explodeForce, Vector3 direction)
+    {
+        _rigidbody.AddForce(-direction * explodeForce, ForceMode.Impulse);
     }
 }

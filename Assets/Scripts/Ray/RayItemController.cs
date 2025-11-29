@@ -6,21 +6,30 @@ public class RayItemController : IRayController
 
     private Ray _ray;
 
+    private InputDrag _inputDrag;
+
     public RayItemController(LayerMask itemMask)
     {
+        _inputDrag = new LeftMouseInputDrag();
+
         _itemMask = itemMask;
     }
 
-    public Vector3 GetPoint(Ray ray)
+    public Vector3 GetPoint()
     {
+        Ray ray = Camera.main.ScreenPointToRay(_inputDrag.InputPosition());
         Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _itemMask);
         return hit.point;
     }
 
-    public IMoveable GetCollider(Ray ray)
+    public IDraggable GetCollider(Ray ray)
     {
         Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _itemMask);
-        return hit.collider.GetComponent<IMoveable>();
+
+        if (hit.collider != null && hit.collider.TryGetComponent<IDraggable>(out IDraggable item))
+            return item;
+
+        return null;
     }
 
     public bool IsHit(Ray ray)

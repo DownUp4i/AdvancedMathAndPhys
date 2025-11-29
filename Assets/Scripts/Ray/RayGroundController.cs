@@ -4,15 +4,17 @@ using UnityEngine;
 public class RayGroundController : IRayController
 {
     private LayerMask _groundMask;
+    private InputDrag _inputDrag;
 
     public RayGroundController(LayerMask groundMask)
     {
+        _inputDrag = new LeftMouseInputDrag();
         _groundMask = groundMask;
     }
 
     public Vector3 GetPoint()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Camera.main.ScreenPointToRay(_inputDrag.InputPosition());
 
         Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _groundMask);
 

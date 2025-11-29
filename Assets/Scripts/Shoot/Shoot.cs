@@ -17,7 +17,7 @@ public class Shoot
             if (item.TryGetComponent<IExpodable>(out IExpodable explodableItem))
             {
                 Vector3 directionAfterShoot = (rayGroundController.GetPoint() - item.transform.position);
-                explodableItem.Explode(explodeForce, directionAfterShoot);
+                explodableItem.Explode(_explodeForce, directionAfterShoot);
             }
         }
     }
